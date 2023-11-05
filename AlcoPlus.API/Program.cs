@@ -1,6 +1,15 @@
+using AlcoPlus.API.Data;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("AlcoPlusApiDbConnectionString");
+
+builder.Services.AddDbContext<AlcoPlusDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
 
 // Add services to the container.
 
