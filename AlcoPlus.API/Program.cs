@@ -1,3 +1,4 @@
+using AlcoPlus.API.Configurations;
 using AlcoPlus.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -21,8 +22,11 @@ builder.Services.AddSwaggerGen();
 // Add cors to allow all request
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()));
 
+builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
+
 // Configure Serilog
 builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration.WriteTo.Console().ReadFrom.Configuration(context.Configuration));
+
 
 var app = builder.Build();
 
