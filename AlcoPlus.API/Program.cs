@@ -25,7 +25,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()));
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
-
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICountriesRepository, CountriesRepository>();
 
 // Configure Serilog
