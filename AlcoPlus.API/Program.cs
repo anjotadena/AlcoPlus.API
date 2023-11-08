@@ -1,5 +1,7 @@
 using AlcoPlus.API.Configurations;
+using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Data;
+using AlcoPlus.API.Repository;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -23,6 +25,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()));
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
+
+builder.Services.AddScoped<ICountriesRepository, CountriesRepository>();
 
 // Configure Serilog
 builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration.WriteTo.Console().ReadFrom.Configuration(context.Configuration));
