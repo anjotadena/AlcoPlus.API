@@ -2,7 +2,7 @@
 
 namespace AlcoPlus.API.Models.Hotels;
 
-public class GetHotelDto
+public class HotelDto
 {
     public int Id { get; set; }
 

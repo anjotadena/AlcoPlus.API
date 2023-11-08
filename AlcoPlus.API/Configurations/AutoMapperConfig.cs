@@ -11,8 +11,8 @@ public class AutoMapperConfig : Profile
     {
         CreateMap<Country, CreateCountryDto>().ReverseMap();
         CreateMap<Country, GetCountryDto>().ReverseMap();
-        CreateMap<Country, GetCountryDetailsDto>().ReverseMap();
+        CreateMap<Country, CountryDto>().ReverseMap();
         CreateMap<Hotel, CreateHotelDto>().ReverseMap();
-        CreateMap<Hotel, GetHotelDto>().ReverseMap();
+        CreateMap<Hotel, HotelDto>().ReverseMap();
     }
 }
