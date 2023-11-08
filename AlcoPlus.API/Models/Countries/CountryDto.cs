@@ -2,7 +2,7 @@
 
 namespace AlcoPlus.API.Models.Countries;
 
-public class GetCountryDetailsDto : BaseCountryDto
+public class CountryDto : BaseCountryDto
 {
     public int Id { get; set; }
 

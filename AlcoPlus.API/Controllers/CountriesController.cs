@@ -31,7 +31,7 @@ public class CountriesController : ControllerBase
 
     // GET: api/Countries/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetCountryDetailsDto>> GetCountry(int id)
+    public async Task<ActionResult<CountryDto>> GetCountry(int id)
     {
         var country = await _countriesRepository.GetDetails(id);
 
@@ -40,7 +40,7 @@ public class CountriesController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<GetCountryDetailsDto>(country));
+        return Ok(_mapper.Map<CountryDto>(country));
     }
 
     // PUT: api/Countries/5
@@ -82,7 +82,7 @@ public class CountriesController : ControllerBase
     // POST: api/Countries
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Country>> PostCountry(CreateCountryDto countryDto)
+    public async Task<ActionResult<CountryDto>> PostCountry(CreateCountryDto countryDto)
     {
         var country = _mapper.Map<Country>(countryDto);
 
