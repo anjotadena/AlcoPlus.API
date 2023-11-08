@@ -1,4 +1,5 @@
-﻿using AlcoPlus.API.Models.Countries;
+﻿using AlcoPlus.API.Entities;
+using AlcoPlus.API.Models.Countries;
 
 namespace AlcoPlus.API.Models.Hotels;
 
