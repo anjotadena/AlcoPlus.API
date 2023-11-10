@@ -2,6 +2,7 @@ using AlcoPlus.API.Configurations;
 using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Data;
 using AlcoPlus.API.Repository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -16,6 +17,12 @@ builder.Services.AddDbContext<AlcoPlusDbContext>(options =>
 
 // Add services to the container.
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+
+builder.Services
+       .AddIdentityCore<ApiUser>()
+       .AddRoles<IdentityRole>()
+       .AddEntityFrameworkStores<AlcoPlusDbContext>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
