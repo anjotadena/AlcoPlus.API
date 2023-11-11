@@ -3,6 +3,10 @@ using AlcoPlus.API.Data;
 using AlcoPlus.API.Models.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace AlcoPlus.API.Repository;
 
@@ -10,11 +14,16 @@ public class AuthManager : IAuthManager
 {
     private readonly IMapper _mapper;
     private readonly UserManager<ApiUser> _userManager;
+    private readonly IConfiguration _configuration;
+    private ApiUser _user;
+    private const string _loginProvider = "AlcoPlusApi";
+    private const string _refreshTokenKey = "RefreshToken";
 
-    public AuthManager(IMapper mapper, UserManager<ApiUser> userManager)
+    public AuthManager(IMapper mapper, UserManager<ApiUser> userManager, IConfiguration configuration)
     {
         _mapper = mapper;
         _userManager = userManager;
+        _configuration = configuration;
     }
 
     public async Task<IEnumerable<IdentityError>> Register(ApiUserDto userDto)
@@ -34,23 +43,97 @@ public class AuthManager : IAuthManager
         return result.Errors;
     }
 
-    public async Task<bool> Login(LoginUserDto loginUserDto)
+    public async Task<AuthResponseDto> Login(LoginUserDto loginUserDto)
     {
-        try
-        {
-            var user = await _userManager.FindByEmailAsync(loginUserDto.Email);
+        _user = await _userManager.FindByEmailAsync(loginUserDto.Email);
+        var isValidUser = await _userManager.CheckPasswordAsync(_user, loginUserDto.Password);
 
-            if (user is null)
+        if (_user is null || !isValidUser)
+        {
+            return null;
+        }
+
+        var token = await GenerateJwtToken();
+
+        return new AuthResponseDto
+        {
+            Token = token,
+            UserId = _user.Id,
+            RefreshToken = await CreateRefreshToken(),
+        };
+    }
+
+    private async Task<string> GenerateJwtToken()
+    {
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var roles = await _userManager.GetRolesAsync(_user);
+        var roleClaims = roles.Select(x => new Claim(ClaimTypes.Role, x)).ToList();
+        var userClaims = await _userManager.GetClaimsAsync(_user);
+
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, _user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, _user.Email),
+            new Claim("uid", _user.Id),
+        }
+        .Union(userClaims)
+        .Union(roleClaims);
+
+        var token = new JwtSecurityToken(
+                            issuer: _configuration["JwtSettings:Issuer"],
+                            audience: _configuration["JwtSettings:Audience"],
+                            claims: claims,
+                            expires: DateTime.Now.AddMinutes(Convert.ToInt32(_configuration["JwtSettings:DurationInMinutes"])),
+                            signingCredentials: credentials
+                        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task<string> CreateRefreshToken()
+    {
+        await _userManager.RemoveAuthenticationTokenAsync(_user, _loginProvider, _refreshTokenKey);
+
+        var token = await _userManager.GenerateUserTokenAsync(_user, _loginProvider, _refreshTokenKey);
+
+        await _userManager.SetAuthenticationTokenAsync(_user, _loginProvider, _refreshTokenKey, token);
+
+        return token;
+    }
+
+    public async Task<AuthResponseDto> VerifyRefreshToken(AuthResponseDto request)
+    {
+        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
+        var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(request.Token);
+        var username = tokenContent.Claims.ToList().FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Email)?.Value;
+
+        _user = await _userManager.FindByNameAsync(username);
+
+        if (_user is null || _user.Id != request.UserId)
+        {
+            return null;
+        }
+
+        var isValidRefreshToken = await _userManager.VerifyUserTokenAsync(_user, _loginProvider, _refreshTokenKey, request.RefreshToken);
+
+        if (isValidRefreshToken)
+        {
+            var token = await GenerateJwtToken();
+
+            return new AuthResponseDto
             {
-                return default;
-            }
-
-            return await _userManager.CheckPasswordAsync(user, loginUserDto.Password);
-        }
-        catch (Exception)
-        {
+                Token = token,
+                UserId = _user.Id,
+                RefreshToken = await CreateRefreshToken()
+            };
         }
 
-        return false;
+        await _userManager.UpdateSecurityStampAsync(_user);
+
+        return null;
     }
 }

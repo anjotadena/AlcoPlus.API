@@ -1,5 +1,6 @@
 ﻿using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Models.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoPlus.API.Controllers;
@@ -46,20 +47,40 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Login([FromBody] LoginUserDto loginUserDto)
     {
-        var isValidUser = await _authManager.Login(loginUserDto);
+        var authResponse = await _authManager.Login(loginUserDto);
 
-        if (isValidUser)
+        if (authResponse is not null)
         {
-            return Ok();
+            return Ok(authResponse);
         }
 
         return Unauthorized();
     }
 
-    //// api/account/logout
+    // api/account/refreshtoken
+    [HttpPost]
+    [Route("refreshtoken")]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> RefreshToken([FromBody] AuthResponseDto request)
+    {
+        var authResponse = await _authManager.VerifyRefreshToken(request);
+
+        if (authResponse is null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(authResponse);
+    }
+
+    // api/account/logout
     //[HttpPost]
     //[Route("login")]
-    //public Task<IActionResult> Logout()
+    //[Authorize]
+    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //public Task<ActionResult> Logout()
     //{
 
     //}
