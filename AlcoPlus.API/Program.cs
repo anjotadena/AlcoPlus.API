@@ -1,6 +1,7 @@
 using AlcoPlus.API.Configurations;
 using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Data;
+using AlcoPlus.API.Middleware;
 using AlcoPlus.API.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -76,6 +77,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseSerilogRequestLogging();
 

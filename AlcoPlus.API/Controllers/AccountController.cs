@@ -29,31 +29,19 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Register([FromBody] ApiUserDto apiUserDto)
     {
-        _logger.LogInformation($"Registration Attempt for {apiUserDto.Email}");
-        try
+        var errors = await _authManager.Register(apiUserDto);
+
+        if (errors.Any())
         {
-            var errors = await _authManager.Register(apiUserDto);
-
-            if (errors.Any())
+            foreach (var error in errors)
             {
-                foreach (var error in errors)
-                {
-                    ModelState.AddModelError(error.Code, error.Description);
-                }
-
-                return BadRequest(ModelState);
+                ModelState.AddModelError(error.Code, error.Description);
             }
 
-            return Ok();
+            return BadRequest(ModelState);
         }
-        catch (Exception ex)
-        {
-            var message = $"Something went wrong in the {nameof(Register)} - User Registration attempt for {apiUserDto.Email}";
 
-            _logger.LogError(ex, message);
-
-            return Problem(message, statusCode: StatusCodes.Status500InternalServerError);
-        }
+        return Ok();
     }
 
     // api/account/login
