@@ -1,12 +1,17 @@
 using AlcoPlus.API.Configurations;
+using AlcoPlus.API.Configurations.Swagger;
 using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Data;
 using AlcoPlus.API.Repository;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +41,29 @@ builder.Services.AddHttpContextAccessor();
 
 // Add cors to allow all request
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()));
+
+builder.Services.AddApiVersioning(options =>
+        {
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.DefaultApiVersion = new ApiVersion(1, 0); // 1.0
+            options.ReportApiVersions = true;
+
+            //options.ApiVersionReader = ApiVersionReader.Combine(
+            //    new QueryStringApiVersionReader("api-version"),
+            //    new HeaderApiVersionReader("X-Version"),
+            //    new MediaTypeApiVersionReader("ver")
+            //);
+        })
+        .AddApiExplorer(options =>
+        {
+            // Add the versioned API explorer, which also adds IApiVersionDescriptionProvider service
+            // note: the specified format code will format the version as "'v'major[.minor][-status]"
+            options.GroupNameFormat = "'v'VVV";
+
+            // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
+            // can also be used to control the format of the API version in route templates
+            options.SubstituteApiVersionInUrl = true;
+        });
 
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -67,6 +95,13 @@ builder.Services.AddAuthentication(options =>
 // Configure Serilog
 builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration.WriteTo.Console().ReadFrom.Configuration(context.Configuration));
 
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerOptions>();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    // Add a custom operation filter which sets default values
+    options.OperationFilter<SwaggerConfig>();
+});
 
 var app = builder.Build();
 
@@ -74,7 +109,18 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        var descriptions = app.DescribeApiVersions();
+
+        // Build a swagger endpoint for each discovered API version
+        foreach (var description in descriptions)
+        {
+            var url = $"/swagger/{description.GroupName}/swagger.json";
+            var name = description.GroupName.ToUpperInvariant();
+            options.SwaggerEndpoint(url, name);
+        }
+    });
 }
 
 app.UseSerilogRequestLogging();
