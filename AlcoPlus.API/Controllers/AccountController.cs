@@ -1,5 +1,6 @@
 ﻿using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Models.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoPlus.API.Controllers;
@@ -56,10 +57,13 @@ public class AccountController : ControllerBase
         return Unauthorized();
     }
 
-    //// api/account/logout
+    // api/account/logout
     //[HttpPost]
     //[Route("login")]
-    //public Task<IActionResult> Logout()
+    //[Authorize]
+    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //public Task<ActionResult> Logout()
     //{
 
     //}

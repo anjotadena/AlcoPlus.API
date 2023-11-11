@@ -89,4 +89,5 @@ public class AuthManager : IAuthManager
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
 }

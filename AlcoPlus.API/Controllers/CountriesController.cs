@@ -4,11 +4,13 @@ using AlcoPlus.API.Entities;
 using AutoMapper;
 using AlcoPlus.API.Models.Countries;
 using AlcoPlus.API.Contracts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AlcoPlus.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CountriesController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -46,6 +48,7 @@ public class CountriesController : ControllerBase
     // PUT: api/Countries/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
+    [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<GetCountryDto>> PutCountry(int id, UpdateCountryDto updateCountryDto)
     {
         if (id != updateCountryDto.Id)
@@ -82,6 +85,7 @@ public class CountriesController : ControllerBase
     // POST: api/Countries
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
+    [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<CountryDto>> PostCountry(CreateCountryDto countryDto)
     {
         var country = _mapper.Map<Country>(countryDto);
@@ -93,6 +97,7 @@ public class CountriesController : ControllerBase
 
     // DELETE: api/Countries/5
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> DeleteCountry(int id)
     {
         var country = await _countriesRepository.GetAsync(id);

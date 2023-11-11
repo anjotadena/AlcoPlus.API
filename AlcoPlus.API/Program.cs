@@ -80,6 +80,8 @@ app.UseHttpsRedirection();
 // for now, allow any request from our API
 app.UseCors("AllowAll");
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
