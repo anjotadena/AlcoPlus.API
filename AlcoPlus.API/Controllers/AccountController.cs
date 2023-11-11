@@ -10,10 +10,12 @@ namespace AlcoPlus.API.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly IAuthManager _authManager;
+    private readonly ILogger<AccountController> _logger;
 
-    public AccountController(IAuthManager authManager)
+    public AccountController(IAuthManager authManager, ILogger<AccountController> logger)
     {
         _authManager = authManager;
+        _logger = logger;
     }
 
     // api/account/register
@@ -24,19 +26,31 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Register([FromBody] ApiUserDto apiUserDto)
     {
-        var errors = await _authManager.Register(apiUserDto);
-
-        if (errors.Any())
+        _logger.LogInformation($"Registration Attempt for {apiUserDto.Email}");
+        try
         {
-            foreach (var error in errors)
+            var errors = await _authManager.Register(apiUserDto);
+
+            if (errors.Any())
             {
-                ModelState.AddModelError(error.Code, error.Description);
+                foreach (var error in errors)
+                {
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+
+                return BadRequest(ModelState);
             }
 
-            return BadRequest(ModelState);
+            return Ok();
         }
+        catch (Exception ex)
+        {
+            var message = $"Something went wrong in the {nameof(Register)} - User Registration attempt for {apiUserDto.Email}";
 
-        return Ok();
+            _logger.LogError(ex, message);
+
+            return Problem(message, statusCode: StatusCodes.Status500InternalServerError);
+        }
     }
 
     // api/account/login
