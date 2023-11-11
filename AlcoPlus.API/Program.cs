@@ -24,7 +24,9 @@ builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true
 builder.Services
        .AddIdentityCore<ApiUser>()
        .AddRoles<IdentityRole>()
-       .AddEntityFrameworkStores<AlcoPlusDbContext>();
+       .AddTokenProvider<DataProtectorTokenProvider<ApiUser>>("AlcoPlusApi")
+       .AddEntityFrameworkStores<AlcoPlusDbContext>()
+       .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
