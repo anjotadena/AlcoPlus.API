@@ -5,6 +5,7 @@ using AutoMapper;
 using AlcoPlus.API.Models.Countries;
 using AlcoPlus.API.Contracts;
 using Microsoft.AspNetCore.Authorization;
+using AlcoPlus.API.Exceptions;
 
 namespace AlcoPlus.API.Controllers;
 
@@ -39,7 +40,7 @@ public class CountriesController : ControllerBase
 
         if (country is null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(GetCountry), id);
         }
 
         return Ok(_mapper.Map<CountryDto>(country));
@@ -60,7 +61,7 @@ public class CountriesController : ControllerBase
 
         if (country is null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(PutCountry), id);
         }
 
         _mapper.Map(updateCountryDto, country);
@@ -73,7 +74,7 @@ public class CountriesController : ControllerBase
         {
             if (!await CountryExists(id))
             {
-                return NotFound();
+                throw new NotFoundException(nameof(PutCountry), id);
             }
 
             throw;
@@ -102,9 +103,9 @@ public class CountriesController : ControllerBase
     {
         var country = await _countriesRepository.GetAsync(id);
 
-        if (country == null)
+        if (country is null)
         {
-            return NotFound();
+            throw new NotFoundException(nameof(DeleteCountry), id);
         }
 
         await _countriesRepository.DeleteAsync(id);
