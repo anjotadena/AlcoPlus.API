@@ -1,6 +1,7 @@
 ﻿using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Models.Users;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoPlus.API.Controllers;
@@ -11,11 +12,13 @@ public class AccountController : ControllerBase
 {
     private readonly IAuthManager _authManager;
     private readonly ILogger<AccountController> _logger;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AccountController(IAuthManager authManager, ILogger<AccountController> logger)
+    public AccountController(IAuthManager authManager, ILogger<AccountController> logger, IHttpContextAccessor httpContextAccessor)
     {
         _authManager = authManager;
         _logger = logger;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     // api/account/register
@@ -89,13 +92,15 @@ public class AccountController : ControllerBase
     }
 
     // api/account/logout
-    //[HttpPost]
-    //[Route("login")]
-    //[Authorize]
-    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //public Task<ActionResult> Logout()
-    //{
+    [HttpPost]
+    [Route("logout")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> Logout()
+    {
+        await _authManager.Logout();
 
-    //}
+        return Ok();
+    }
 }
