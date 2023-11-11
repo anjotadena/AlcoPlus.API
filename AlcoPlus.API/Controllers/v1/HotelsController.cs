@@ -5,12 +5,13 @@ using AutoMapper;
 using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Models.Hotels;
 using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
 
-namespace AlcoPlus.API.Controllers;
+namespace AlcoPlus.API.Controllers.v1;
 
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/hotels")]
 [ApiController]
-[Authorize]
+[ApiVersion("1.0")]
 public class HotelsController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -56,7 +57,7 @@ public class HotelsController : ControllerBase
         {
             return BadRequest();
         }
-        
+
         var hotel = await _hotelsRepository.GetAsync(id);
 
         if (hotel is null)
