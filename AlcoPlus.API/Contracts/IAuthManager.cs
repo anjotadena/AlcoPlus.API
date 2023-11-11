@@ -12,4 +12,6 @@ public interface IAuthManager
     Task<string> CreateRefreshToken();
 
     Task<AuthResponseDto> VerifyRefreshToken(AuthResponseDto authResponseDto);
+
+    Task<bool> Logout();
 }

@@ -2,6 +2,7 @@
 using AlcoPlus.API.Data;
 using AlcoPlus.API.Models.Users;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,15 +16,17 @@ public class AuthManager : IAuthManager
     private readonly IMapper _mapper;
     private readonly UserManager<ApiUser> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private ApiUser _user;
     private const string _loginProvider = "AlcoPlusApi";
     private const string _refreshTokenKey = "RefreshToken";
 
-    public AuthManager(IMapper mapper, UserManager<ApiUser> userManager, IConfiguration configuration)
+    public AuthManager(IMapper mapper, UserManager<ApiUser> userManager, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
     {
         _mapper = mapper;
         _userManager = userManager;
         _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<IEnumerable<IdentityError>> Register(ApiUserDto userDto)
@@ -135,5 +138,36 @@ public class AuthManager : IAuthManager
         await _userManager.UpdateSecurityStampAsync(_user);
 
         return null;
+    }
+
+    public async Task<bool> Logout()
+    {
+        var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+        if (token is null)
+        {
+            return false;
+        }
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadJwtToken(token);
+
+        if (jwtToken is null)
+        {
+            return false;
+        }
+
+        var email = jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
+
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user is null)
+        {
+            return false;
+        }
+
+        await _userManager.UpdateSecurityStampAsync(user);
+
+        return true;
     }
 }
