@@ -7,6 +7,7 @@ using AlcoPlus.API.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using AlcoPlus.API.Exceptions;
 using Asp.Versioning;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace AlcoPlus.API.Controllers.v2;
 
@@ -27,6 +28,7 @@ public class CountriesController : ControllerBase
 
     // GET: api/Countries
     [HttpGet]
+    [EnableQuery]
     public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
     {
         var countries = await _countriesRepository.GetAllAsync();
