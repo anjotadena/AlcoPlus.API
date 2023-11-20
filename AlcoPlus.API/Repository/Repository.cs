@@ -1,5 +1,8 @@
 ﻿using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Data;
+using AlcoPlus.API.Models;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AlcoPlus.API.Repository;
@@ -8,10 +11,12 @@ namespace AlcoPlus.API.Repository;
 public class Repository<T> : IRepository<T> where T : class
 {
     private readonly AlcoPlusDbContext _context;
+    private readonly IMapper _mapper;
 
-    public Repository(AlcoPlusDbContext alcoPlusDbContext)
+    public Repository(AlcoPlusDbContext alcoPlusDbContext, IMapper mapper)
     {
         _context = alcoPlusDbContext;
+        _mapper = mapper;
     }
 
     public async Task<T> AddAsync(T entity)
@@ -41,6 +46,24 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task<List<T>> GetAllAsync()
     {
         return await _context.Set<T>().ToListAsync();
+    }
+
+    public async Task<PagedResult<TResult>> GetAllAsync<TResult>(QueryParameters queryParameters)
+    {
+        var totalSize = await _context.Set<T>().CountAsync();
+        var items = await _context.Set<T>()
+                                  .Skip(queryParameters.StartIndex)
+                                  .Take(queryParameters.PageSize)
+                                  .ProjectTo<TResult>(_mapper.ConfigurationProvider)
+                                  .ToListAsync();
+
+        return new PagedResult<TResult>
+        {
+            PageNumber = queryParameters.PageNumber,
+            RecordNumber = queryParameters.PageSize,
+            TotalCount = totalSize,
+            Items = items,
+        };
     }
 
     public async Task<T> GetAsync(int? id)

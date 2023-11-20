@@ -6,6 +6,8 @@ using AlcoPlus.API.Models.Countries;
 using AlcoPlus.API.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using AlcoPlus.API.Exceptions;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using AlcoPlus.API.Models;
 
 namespace AlcoPlus.API.Controllers;
 
@@ -24,12 +26,21 @@ public class CountriesController : ControllerBase
     }
 
     // GET: api/Countries
-    [HttpGet]
+    [HttpGet("GetAllCountries")]
     public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
     {
         var countries = await _countriesRepository.GetAllAsync();
 
         return Ok(_mapper.Map<List<GetCountryDto>>(countries));
+    }
+
+    // GET: api/Countries
+    [HttpGet]
+    public async Task<ActionResult<PagedResult<GetCountryDto>>> GetPagedCountries([FromQuery] QueryParameters queryParameters)
+    {
+        var pagedContriesResult = await _countriesRepository.GetAllAsync<GetCountryDto>(queryParameters);
+
+        return Ok(pagedContriesResult);
     }
 
     // GET: api/Countries/5
