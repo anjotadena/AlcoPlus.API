@@ -1,8 +1,8 @@
-using AlcoPlus.API.Configurations;
-using AlcoPlus.API.Configurations.Swagger;
-using AlcoPlus.API.Contracts;
-using AlcoPlus.API.Middleware;
-using AlcoPlus.API.Repository;
+using AlcoPlus.Core.Configurations;
+using AlcoPlus.Core.Configurations.Swagger;
+using AlcoPlus.Core.Contracts;
+using AlcoPlus.Core.Middleware;
+using AlcoPlus.Core.Repository;
 using AlcoPlus.Data;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

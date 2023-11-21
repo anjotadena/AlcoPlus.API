@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using AlcoPlus.API.Contracts;
-using AlcoPlus.API.Models.Hotels;
-using Asp.Versioning;
+using AlcoPlus.Core.Contracts;
+using AlcoPlus.Core.Models.Hotels;
 using AlcoPlus.Data;
 
 namespace AlcoPlus.API.Controllers.v1;
 
 [Route("api/v{version:apiVersion}/hotels")]
 [ApiController]
-[ApiVersion("1.0")]
+[Asp.Versioning.ApiVersion("1.0")]
 public class HotelsController : ControllerBase
 {
     private readonly IMapper _mapper;

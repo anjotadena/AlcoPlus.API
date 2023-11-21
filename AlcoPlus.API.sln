@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlcoPlus.API", "AlcoPlus.AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlcoPlus.Data", "AlcoPlus.Data\AlcoPlus.Data.csproj", "{83890C61-10AC-484B-9702-E476EDA71A3F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlcoPlus.Core", "AlcoPlus.Core\AlcoPlus.Core.csproj", "{12C2CA3D-CBCC-48F4-990D-82A7E746297A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{83890C61-10AC-484B-9702-E476EDA71A3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83890C61-10AC-484B-9702-E476EDA71A3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83890C61-10AC-484B-9702-E476EDA71A3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12C2CA3D-CBCC-48F4-990D-82A7E746297A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12C2CA3D-CBCC-48F4-990D-82A7E746297A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12C2CA3D-CBCC-48F4-990D-82A7E746297A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12C2CA3D-CBCC-48F4-990D-82A7E746297A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
