@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AlcoPlus.API.Entities;
 using AutoMapper;
 using AlcoPlus.API.Contracts;
 using AlcoPlus.API.Models.Hotels;
-using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
+using AlcoPlus.Data;
 
 namespace AlcoPlus.API.Controllers.v1;
 

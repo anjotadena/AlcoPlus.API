@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AlcoPlus.API.Entities;
+namespace AlcoPlus.Data;
 
 public class Hotel
 {

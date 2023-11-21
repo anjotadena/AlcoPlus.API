@@ -1,5 +1,4 @@
-﻿using AlcoPlus.API.Data;
-using AlcoPlus.API.Entities;
+﻿using AlcoPlus.Data;
 using AlcoPlus.API.Models.Countries;
 using AlcoPlus.API.Models.Hotels;
 using AlcoPlus.API.Models.Users;

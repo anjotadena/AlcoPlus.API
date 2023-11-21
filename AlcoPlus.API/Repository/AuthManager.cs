@@ -1,6 +1,6 @@
 ﻿using AlcoPlus.API.Contracts;
-using AlcoPlus.API.Data;
 using AlcoPlus.API.Models.Users;
+using AlcoPlus.Data;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;

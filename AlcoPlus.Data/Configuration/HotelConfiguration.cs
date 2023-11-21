@@ -1,8 +1,7 @@
-﻿using AlcoPlus.API.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace AlcoPlus.API.Data.Configuration;
+namespace AlcoPlus.Data.Configuration;
 
 public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
 {

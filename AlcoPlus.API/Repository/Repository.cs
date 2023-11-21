@@ -1,5 +1,5 @@
 ﻿using AlcoPlus.API.Contracts;
-using AlcoPlus.API.Data;
+using AlcoPlus.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AlcoPlus.API.Repository;

@@ -1,9 +1,8 @@
-﻿using AlcoPlus.API.Data.Configuration;
-using AlcoPlus.API.Entities;
+﻿using AlcoPlus.Data.Configuration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AlcoPlus.API.Data;
+namespace AlcoPlus.Data;
 
 public class AlcoPlusDbContext : IdentityDbContext<ApiUser>
 {

@@ -1,4 +1,4 @@
-﻿namespace AlcoPlus.API.Entities;
+﻿namespace AlcoPlus.Data;
 
 public class Country
 {

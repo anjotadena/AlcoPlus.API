@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AlcoPlus.API.Entities;
 using AutoMapper;
 using AlcoPlus.API.Models.Countries;
 using AlcoPlus.API.Contracts;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using AlcoPlus.API.Exceptions;
 using Asp.Versioning;
 using Microsoft.AspNetCore.OData.Query;
+using AlcoPlus.Data;
 
 namespace AlcoPlus.API.Controllers.v2;
 

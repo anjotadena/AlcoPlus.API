@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlcoPlus.API", "AlcoPlus.API\AlcoPlus.API.csproj", "{7AEA0803-B85A-4D3D-B298-8F4C0D55E823}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlcoPlus.API", "AlcoPlus.API\AlcoPlus.API.csproj", "{7AEA0803-B85A-4D3D-B298-8F4C0D55E823}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlcoPlus.Data", "AlcoPlus.Data\AlcoPlus.Data.csproj", "{83890C61-10AC-484B-9702-E476EDA71A3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{7AEA0803-B85A-4D3D-B298-8F4C0D55E823}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AEA0803-B85A-4D3D-B298-8F4C0D55E823}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AEA0803-B85A-4D3D-B298-8F4C0D55E823}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83890C61-10AC-484B-9702-E476EDA71A3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83890C61-10AC-484B-9702-E476EDA71A3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83890C61-10AC-484B-9702-E476EDA71A3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83890C61-10AC-484B-9702-E476EDA71A3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿using AlcoPlus.API.Entities;
+﻿using AlcoPlus.Data;
 
 namespace AlcoPlus.API.Contracts;
 

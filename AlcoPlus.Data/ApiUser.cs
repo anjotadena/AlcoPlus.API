@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace AlcoPlus.API.Data;
+namespace AlcoPlus.Data;
 
 public class ApiUser : IdentityUser
 {
