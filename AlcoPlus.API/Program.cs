@@ -1,13 +1,13 @@
-using AlcoPlus.API.Configurations;
-using AlcoPlus.API.Configurations.Swagger;
-using AlcoPlus.API.Contracts;
-using AlcoPlus.API.Data;
-using AlcoPlus.API.Middleware;
-using AlcoPlus.API.Repository;
+using AlcoPlus.Core.Configurations;
+using AlcoPlus.Core.Configurations.Swagger;
+using AlcoPlus.Core.Contracts;
+using AlcoPlus.Core.Middleware;
+using AlcoPlus.Core.Repository;
+using AlcoPlus.Data;
 using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -108,6 +108,11 @@ builder.Services.AddResponseCaching(options =>
 {
     options.UseCaseSensitivePaths = true;
     options.MaximumBodySize = 1024; // 1MB
+});
+
+builder.Services.AddControllers().AddOData(options =>
+{
+    options.Select().Filter().OrderBy();
 });
 
 var app = builder.Build();

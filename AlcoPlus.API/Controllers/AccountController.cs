@@ -1,7 +1,6 @@
-﻿using AlcoPlus.API.Contracts;
-using AlcoPlus.API.Models.Users;
+﻿using AlcoPlus.Core.Contracts;
+using AlcoPlus.Core.Models.Users;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoPlus.API.Controllers;
