@@ -4,17 +4,17 @@
 
 public interface IRepository<T> where T : class
 {
-    Task<T> GetAsync(int? id);
+    Task<TResult> GetAsync<TResult>(int? id);
 
-    Task<List<T>> GetAllAsync();
+    Task<List<TResult>> GetAllAsync<TResult>();
     
     Task<PagedResult<TResult>> GetAllAsync<TResult>(QueryParameters queryParameters);
 
-    Task<T> AddAsync(T entity);
+    Task<TResult> AddAsync<TSource, TResult>(TSource entity);
 
     Task DeleteAsync(int id);
 
-    Task<T> UpdateAsync(T entity);
+    Task<TResult> UpdateAsync<TSource, TResult>(int id, TSource entity);
 
     Task<bool> Exists(int id);
 }
