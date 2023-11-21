@@ -1,3 +1,4 @@
+using AutoMapper;
 ﻿using AlcoPlus.Core.Contracts;
 using AlcoPlus.Data;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ public class CountriesRepository : Repository<Country>, ICountriesRepository
 {
     private readonly AlcoPlusDbContext _context;
 
-    public CountriesRepository(AlcoPlusDbContext context) : base(context)
+    public CountriesRepository(AlcoPlusDbContext context, IMapper mapper) : base(context, mapper)
     {
         _context = context;
     }
