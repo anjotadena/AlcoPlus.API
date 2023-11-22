@@ -5,7 +5,6 @@ using AlcoPlus.Core.Models.Countries;
 using AlcoPlus.Core.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using AlcoPlus.Core.Exceptions;
-using AlcoPlus.Data;
 using AlcoPlus.Core.Models;
 
 namespace AlcoPlus.API.Controllers;
@@ -28,9 +27,9 @@ public class CountriesController : ControllerBase
     [HttpGet("GetAllCountries")]
     public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
     {
-        var countries = await _countriesRepository.GetAllAsync();
+        var countries = await _countriesRepository.GetAllAsync<GetCountryDto>();
 
-        return Ok(_mapper.Map<List<GetCountryDto>>(countries));
+        return Ok(countries);
     }
 
     // GET: api/Countries
@@ -48,12 +47,7 @@ public class CountriesController : ControllerBase
     {
         var country = await _countriesRepository.GetDetails(id);
 
-        if (country is null)
-        {
-            throw new NotFoundException(nameof(GetCountry), id);
-        }
-
-        return Ok(_mapper.Map<CountryDto>(country));
+        return Ok(country);
     }
 
     // PUT: api/Countries/5
@@ -67,18 +61,11 @@ public class CountriesController : ControllerBase
             return BadRequest();
         }
 
-        var country = await _countriesRepository.GetAsync(id);
-
-        if (country is null)
-        {
-            throw new NotFoundException(nameof(PutCountry), id);
-        }
-
-        _mapper.Map(updateCountryDto, country);
+        GetCountryDto country;
 
         try
         {
-            await _countriesRepository.UpdateAsync(country);
+            country = await _countriesRepository.UpdateAsync<UpdateCountryDto, GetCountryDto>(id, updateCountryDto);
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -90,7 +77,7 @@ public class CountriesController : ControllerBase
             throw;
         }
 
-        return Ok(_mapper.Map<GetCountryDto>(country));
+        return Ok(country);
     }
 
     // POST: api/Countries
@@ -99,11 +86,9 @@ public class CountriesController : ControllerBase
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<CountryDto>> PostCountry(CreateCountryDto countryDto)
     {
-        var country = _mapper.Map<Country>(countryDto);
+        var result = await _countriesRepository.AddAsync<CreateCountryDto, CountryDto>(countryDto);
 
-        var result = await _countriesRepository.AddAsync(country);
-
-        return CreatedAtAction("GetCountry", result);
+        return CreatedAtAction(nameof(GetCountry), result);
     }
 
     // DELETE: api/Countries/5
@@ -111,13 +96,6 @@ public class CountriesController : ControllerBase
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> DeleteCountry(int id)
     {
-        var country = await _countriesRepository.GetAsync(id);
-
-        if (country is null)
-        {
-            throw new NotFoundException(nameof(DeleteCountry), id);
-        }
-
         await _countriesRepository.DeleteAsync(id);
 
         return NoContent();

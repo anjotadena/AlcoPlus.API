@@ -10,14 +10,10 @@ namespace AlcoPlus.API.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly IAuthManager _authManager;
-    private readonly ILogger<AccountController> _logger;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AccountController(IAuthManager authManager, ILogger<AccountController> logger, IHttpContextAccessor httpContextAccessor)
+    public AccountController(IAuthManager authManager)
     {
         _authManager = authManager;
-        _logger = logger;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     // api/account/register

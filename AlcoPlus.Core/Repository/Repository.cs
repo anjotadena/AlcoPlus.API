@@ -4,6 +4,7 @@ using AutoMapper.QueryableExtensions;
 using AlcoPlus.Data;
 using AlcoPlus.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using AlcoPlus.Core.Exceptions;
 
 namespace AlcoPlus.Core.Repository;
 
@@ -19,17 +20,24 @@ public class Repository<T> : IRepository<T> where T : class
         _mapper = mapper;
     }
 
-    public async Task<T> AddAsync(T entity)
+    public async Task<TResult> AddAsync<TSource, TResult>(TSource source)
     {
-        await _context.AddAsync(entity);
+        var entity = _mapper.Map<T>(source);
+        var result = await _context.AddAsync(entity);
+
         await _context.SaveChangesAsync();
 
-        return entity;
+        return _mapper.Map<TResult>(result.Entity);
     }
 
     public async Task DeleteAsync(int id)
     {
-        var entity = await GetAsync(id);
+        var entity = await GetAsync<T>(id);
+
+        if (entity is null)
+        {
+            throw new NotFoundException(typeof(T).Name, id);
+        }
 
         _context.Set<T>().Remove(entity);
 
@@ -38,14 +46,16 @@ public class Repository<T> : IRepository<T> where T : class
 
     public async Task<bool> Exists(int id)
     {
-        var entity = await GetAsync(id);
+        var entity = await GetAsync<T>(id);
 
         return entity is not null;
     }
 
-    public async Task<List<T>> GetAllAsync()
+    public async Task<List<TResult>> GetAllAsync<TResult>()
     {
-        return await _context.Set<T>().ToListAsync();
+        return await _context.Set<T>()
+                             .ProjectTo<TResult>(_mapper.ConfigurationProvider)
+                             .ToListAsync();
     }
 
     public async Task<PagedResult<TResult>> GetAllAsync<TResult>(QueryParameters queryParameters)
@@ -66,22 +76,35 @@ public class Repository<T> : IRepository<T> where T : class
         };
     }
 
-    public async Task<T> GetAsync(int? id)
+    public async Task<TResult> GetAsync<TResult>(int? id)
     {
-        if (id is null)
+        var result = await _context.Set<T>().FindAsync(id);
+
+        if (result is null)
         {
-            return null;
+            throw new NotFoundException(typeof(T).Name, id.HasValue ? id : "No Key provided");
         }
 
-        return await _context.Set<T>().FindAsync(id);
+        return _mapper.Map<TResult>(result);
     }
 
-    public async Task<T> UpdateAsync(T entity)
+    public async Task<TResult> UpdateAsync<TSource, TResult>(int id, TSource source)
     {
+        var entity = await GetAsync<T>(id);
+
+        if (entity is null)
+        {
+            throw new NotFoundException(typeof(T).Name, id);
+        }
+
+        entity = _mapper.Map(source, entity);
+
         _context.Update(entity);
 
         await _context.SaveChangesAsync();
 
-        return entity;
+        var result = _mapper.Map<TResult>(entity);
+
+        return result;
     }
 }
