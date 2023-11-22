@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
@@ -102,6 +103,41 @@ builder.Services.AddSwaggerGen(options =>
 {
     // Add a custom operation filter which sets default values
     options.OperationFilter<SwaggerConfig>();
+
+    var BearerScheme = "Bearer";
+
+    // @Todo Fix this
+    //options.SwaggerDoc("v1", new OpenApiInfo { Title = "Alco Plus API v1", Version = "v1" });
+    //options.SwaggerDoc("v2", new OpenApiInfo { Title = "Alco Plus API v2", Version = "v2" });
+    options.AddSecurityDefinition(BearerScheme, new OpenApiSecurityScheme
+    {
+        Description = @$"JWT Authorization header using the Bearer scheme.
+                        Enter '{BearerScheme}' [space] and then your token in the text input below.
+                        Example: '{BearerScheme} abcd'
+                        ",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = BearerScheme
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = BearerScheme
+                },
+                Scheme = "Oauth2",
+                Name = BearerScheme,
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
 });
 
 builder.Services.AddResponseCaching(options =>
