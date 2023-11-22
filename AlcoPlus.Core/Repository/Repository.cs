@@ -23,11 +23,11 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task<TResult> AddAsync<TSource, TResult>(TSource source)
     {
         var entity = _mapper.Map<T>(source);
+        var result = await _context.AddAsync(entity);
 
-        await _context.AddAsync(entity);
         await _context.SaveChangesAsync();
 
-        return _mapper.Map<TResult>(entity);
+        return _mapper.Map<TResult>(result.Entity);
     }
 
     public async Task DeleteAsync(int id)

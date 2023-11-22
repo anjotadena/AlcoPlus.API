@@ -25,9 +25,7 @@ public class HotelsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<HotelDto>>> GetHotels()
     {
-        var hotels = await _hotelsRepository.GetAllAsync();
-
-        _mapper.Map<List<HotelDto>>(hotels);
+        var hotels = await _hotelsRepository.GetAllAsync<HotelDto>();
 
         return Ok(hotels);
     }
@@ -36,14 +34,9 @@ public class HotelsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<HotelDto>> GetHotel(int id)
     {
-        var hotel = await _hotelsRepository.GetAsync(id);
+        var hotel = await _hotelsRepository.GetAsync<HotelDto>(id);
 
-        if (hotel is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(_mapper.Map<HotelDto>(hotel));
+        return Ok(hotel);
     }
 
     // PUT: api/Hotels/5
@@ -56,18 +49,10 @@ public class HotelsController : ControllerBase
             return BadRequest();
         }
 
-        var hotel = await _hotelsRepository.GetAsync(id);
-
-        if (hotel is null)
-        {
-            return NotFound();
-        }
-
-        _mapper.Map(hotel, hotelDto);
-
+        HotelDto hotel;
         try
         {
-            await _hotelsRepository.UpdateAsync(hotel);
+            hotel = await _hotelsRepository.UpdateAsync<UpdateHotelDto, HotelDto>(id, hotelDto);
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -78,7 +63,7 @@ public class HotelsController : ControllerBase
             throw;
         }
 
-        return Ok(_mapper.Map<HotelDto>(hotel));
+        return Ok(hotel);
     }
 
     // POST: api/Hotels
@@ -86,9 +71,7 @@ public class HotelsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Hotel>> PostHotel(CreateHotelDto hotelDto)
     {
-        var hotel = _mapper.Map<Hotel>(hotelDto);
-
-        var result = await _hotelsRepository.AddAsync(hotel);
+        var result = await _hotelsRepository.AddAsync<CreateHotelDto, Hotel>(hotelDto);
 
         return CreatedAtAction("GetHotel", result);
     }
@@ -97,13 +80,6 @@ public class HotelsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteHotel(int id)
     {
-        var hotel = await _hotelsRepository.GetAsync(id);
-
-        if (hotel is null)
-        {
-            return NotFound();
-        }
-
         await _hotelsRepository.DeleteAsync(id);
 
         return NoContent();
