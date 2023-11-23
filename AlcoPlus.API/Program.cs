@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,7 @@ using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 using System.Text.Json;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -149,6 +151,19 @@ builder.Services.AddResponseCaching(options =>
     options.MaximumBodySize = 1024; // 1MB
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    // Updating to 429 (Too Many Requests) because it's more correct. The default value is 503 (Service Unavailable).
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddSlidingWindowLimiter(policyName: "sliding", options => {
+        options.PermitLimit = 30;
+        options.Window = TimeSpan.FromSeconds(60);
+        options.SegmentsPerWindow = 2;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = 2;
+    });
+});
+
 builder.Services
        .AddHealthChecks()
        .AddCheck<CustomHealthCheck>(
@@ -249,6 +264,8 @@ static Task WriteResponse(HttpContext context, HealthReport healthReport)
 };
 
 app.MapHealthChecks("/health");
+
+app.UseRateLimiter();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
